@@ -2,18 +2,18 @@
 
 <?php
 if (isset($_POST['login'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
     $sql = "SELECT * FROM users WHERE email='$email'";
     $result = mysqli_query($conn, $sql);
     $user = mysqli_fetch_assoc($result);
 
     if ($user) {
-        if ($user['email'] == 'admin@gmail.com' && $password == 'admin123' && $user['role'] == 'admin') {
+        if ($email == 'admin@gmail.com' && $password == 'admin123') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['name'] = $user['name'];
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['role'] = 'admin';
 
             header("Location: admin/dashboard.php");
             exit();
@@ -24,7 +24,11 @@ if (isset($_POST['login'])) {
             $_SESSION['name'] = $user['name'];
             $_SESSION['role'] = $user['role'];
 
-            header("Location: products.php");
+            if ($user['role'] == 'admin') {
+                header("Location: admin/dashboard.php");
+            } else {
+                header("Location: products.php");
+            }
             exit();
         }
     }
